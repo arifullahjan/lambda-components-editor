@@ -166,11 +166,24 @@ export const CodeEditor = () => {
         height="90vh"
         defaultLanguage="javascript"
         defaultValue={`
-      /*
-        Export component as default
-        Export descriptor as child of component
-      */
-      
+export default Component = ({
+  title,
+  description
+}) => {
+  return (
+    <>
+      <h1>{title}</h1>
+      <p>{description}</p>
+    </>
+  )
+}
+
+Component.descriptor = Types.Component({
+  attributes: {
+    title: Types.String({ lable: 'Title' }),
+    description: Types.String({ lable: 'Description' })
+  }
+})      
       `}
         value={sourceCode}
         onChange={(value) => setSourceCode(value)}
