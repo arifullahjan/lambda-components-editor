@@ -1,22 +1,41 @@
 {
-  "name": "react-gh-pages",
+  "name": "lambda-component-editor",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://gitname.github.io/react-gh-pages",
+  "homepage": "http://gitname.github.io/lambda-component-editor",
   "dependencies": {
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4"
+    "@monaco-editor/react": "^4.2.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-query": "^3.19.6"
   },
   "devDependencies": {
+    "autoprefixer": "^10.3.1",
     "gh-pages": "^1.0.0",
-    "react-scripts": "1.0.7"
+    "postcss": "^8.3.6",
+    "postcss-cli": "^8.3.1",
+    "react-scripts": "^4.0.3",
+    "tailwindcss": "^2.2.7"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "start": "npm run watch:css && react-scripts start",
+    "build": "npm run watch:css && react-scripts build",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "watch:css": "postcss src/styles/tailwind.css -o src/styles/output.css",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"    
+    "deploy": "gh-pages -d build"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

@@ -1,21 +1,20 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
-
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+import React, { Component } from "react";
+import logo from "./logo.svg";
+import "./App.css";
+import "./styles/output.css";
+import { CodeEditor } from "./Editor";
+import { useState } from "react";
+import { QueryClient, QueryClientProvider } from "react-query";
+// Create a client
+const queryClient = new QueryClient();
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <div className="App ">
+        <CodeEditor></CodeEditor>
       </div>
-    );
-  }
-}
+    </QueryClientProvider>
+  );
+};
 
 export default App;
