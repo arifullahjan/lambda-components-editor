@@ -2,7 +2,7 @@
   "name": "lambda-component-editor",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://arifullahjan.github.io/lambda-component-editor",
+  "homepage": "https://arifullahjan.github.io/lambda-components-editor",
   "dependencies": {
     "@monaco-editor/react": "^4.2.2",
     "react": "^17.0.2",
