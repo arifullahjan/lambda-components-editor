@@ -1,6 +1,8 @@
 import Editor from "@monaco-editor/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "react-query";
+import { DescritptorEditor } from "./DescriptorEditor";
+import { Preview } from "./Preview";
 import { build, list, saveCode } from "./utils";
 
 const defaultOptions = {
@@ -60,6 +62,7 @@ const defaultOptions = {
   wordWrapColumn: 80,
   wordWrapMinified: true,
   wrappingIndent: "none",
+  theme: "vs-dark",
 };
 const search = new URLSearchParams(window.location.search);
 const componentIdFromUrl = search?.get("componentId");
@@ -70,11 +73,16 @@ const cloudBuildService = search?.get("cloudBuildService");
 export const CodeEditor = () => {
   const [sourceCode, setSourceCode] = useState("");
   const [componentId, setComponentId] = useState(componentIdFromUrl);
+  const [updatedDescriptor, setUpdatedDescriptor] = useState({});
 
   // Queries
   const { data: componentList } = useQuery("componentList", () => {
     return list(cloudBuildService, accountId);
   });
+
+  const componentInfo = useMemo(() => {
+    return componentList?.find((c) => c.componentId === componentId) || {};
+  }, [componentList]);
   //   // Mutations
   const saveMutation = useMutation(async () => {
     return saveCode(cloudBuildService, accountId, componentId, sourceCode);
@@ -86,21 +94,20 @@ export const CodeEditor = () => {
   console.log(saveMutation);
   useEffect(async () => {
     try {
-      const fileUrl =
-        sourceFile ||
-        componentList?.find((c) => c.componentId === componentId).sourceUrl;
+      setUpdatedDescriptor(componentInfo?.descriptor || {});
+      const fileUrl = sourceFile || componentInfo.sourceUrl;
       console.log({ componentList, fileUrl });
       const code = await fetch(fileUrl).then((response) => response.text());
       setSourceCode(code);
     } catch (e) {
       console.error(e);
     }
-  }, [componentList]);
+  }, [componentInfo]);
 
   return (
     <>
-      <div className="flex p-4 justify-between items-center">
-        <div className="text-left">
+      <div className="p-4  items-center">
+        <div className="text-center w-full">
           <h2 className="text-lg">{"⚒️ 🧰 ⚒️ Lambda componet editor"}</h2>
           <p className="text-sm">
             Code react component online in browser from anywhere, build and
@@ -121,74 +128,74 @@ export const CodeEditor = () => {
               );
             })}
           </p>
-          <div className="">
-            <label
-              className="block text-gray-700 text-sm mb-2"
-              for="componentId"
-            >
-              Unique Component ID
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="componentId"
-              type="text"
-              placeholder=""
-              value={componentId}
-              onChange={(e) => {
-                setComponentId(e.target.value);
+        </div>
+      </div>
+
+      <div className="grid grid-cols-layout">
+        <div className="">
+          <div className="p-2">
+            <DescritptorEditor
+              value={updatedDescriptor}
+              onChange={(updateValue) => {
+                setUpdatedDescriptor(updateValue);
+                setComponentId(updateValue.id);
               }}
             />
           </div>
+
+          <div>
+            <button
+              className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded  m-2 `}
+              onClick={() => saveMutation.mutate({})}
+            >
+              {saveMutation.isLoading ? "Saving..." : "Save"}
+            </button>
+            <button
+              className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded  m-2`}
+              onClick={() => buildMutation.mutate({})}
+            >
+              {buildMutation.isLoading ? "Building..." : "Build"}
+            </button>
+          </div>
         </div>
 
-        <div>
-          <button
-            className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded  m-2 `}
-            onClick={() => saveMutation.mutate({})}
-          >
-            Save
-          </button>
-          <button
-            disabled={true}
-            className={`bg-blue-200  text-white font-bold py-2 px-4 rounded  m-2 `}
-          >
-            Run
-          </button>
-          <button
-            className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded  m-2`}
-            onClick={() => buildMutation.mutate({})}
-          >
-            Build
-          </button>
-        </div>
-      </div>
-      <Editor
-        height="90vh"
-        defaultLanguage="javascript"
-        defaultValue={`
-export default Component = ({
+        <div className="rounded-lg overflow-hidden">
+          <Editor
+            height="90vh"
+            defaultLanguage="javascript"
+            defaultValue={`
+import React from "react";
+
+const defaultProps = {
+  title: 'Hello',
+  description: 'World'
+}
+const RemoteComponent = ({
   title,
   description
-}) => {
+} = defaultProps) => {
   return (
     <>
+      😎 
       <h1>{title}</h1>
       <p>{description}</p>
     </>
   )
 }
 
-Component.descriptor = Types.Component({
-  attributes: {
-    title: Types.String({ lable: 'Title' }),
-    description: Types.String({ lable: 'Description' })
-  }
-})      
+export default RemoteComponent;   
       `}
-        value={sourceCode}
-        onChange={(value) => setSourceCode(value)}
-        {...defaultOptions}
-      />
+            value={sourceCode}
+            onChange={(value) => setSourceCode(value)}
+            {...defaultOptions}
+          />
+        </div>
+        <div>
+          <h3>Preview</h3>
+
+          {componentInfo ? <Preview url={componentInfo?.compiledUrl} /> : "..."}
+        </div>
+      </div>
     </>
   );
 };

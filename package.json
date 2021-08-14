@@ -4,10 +4,13 @@
   "private": true,
   "homepage": "https://arifullahjan.github.io/lambda-components-editor",
   "dependencies": {
+    "@heroicons/react": "^1.0.3",
     "@monaco-editor/react": "^4.2.2",
+    "@paciolan/remote-component": "^2.11.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-query": "^3.19.6"
+    "react-query": "^3.19.6",
+    "react-router-dom": "^5.2.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.3.1",
